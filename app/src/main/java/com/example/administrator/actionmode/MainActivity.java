@@ -7,17 +7,16 @@ import java.util.Map;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.view.ContextMenu;
+import android.view.ActionMode;
+import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-import android.widget.Toast;
+
 
 public class MainActivity extends Activity {
-
     private ListView listView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,29 +38,27 @@ public class MainActivity extends Activity {
         }
         SimpleAdapter mSimpleAdapter = new SimpleAdapter(this,listItems,R.layout.temp,new String[]{"img","text"},new int[]{R.id.image_view,R.id.text_view});
         listView.setAdapter(mSimpleAdapter);
-        registerForContextMenu(listView);
-    }
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.main, menu);
-    }
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.edit:
-                Toast.makeText(MainActivity.this, "编辑操作", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.share:
-                Toast.makeText(MainActivity.this, "分享操作", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.delete:
-                Toast.makeText(MainActivity.this, "删除操作", Toast.LENGTH_SHORT).show();
-                break;
-            default:
-                break;
-        }
-        return super.onContextItemSelected(item);
-    }
+        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+        listView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+            @Override
+            public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+                MenuInflater inflater=actionMode.getMenuInflater();
+                inflater.inflate(R.menu.menu,menu);
+                return true;
+            }
+            @Override
+            public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
+                return false;
+            }
+            @Override
+            public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
+                return false;
+            }
+            @Override
+            public void onDestroyActionMode(ActionMode actionMode) {
+            }
+            @Override
+            public void onItemCheckedStateChanged(ActionMode actionMode, int i, long l, boolean b) {}
+            });
+     }
 }
